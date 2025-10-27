@@ -1,0 +1,26 @@
+# Use official Python base image
+FROM python:3.10-slim
+
+# Install Java and C++ compilers
+RUN apt-get update && \
+    apt-get install -y default-jdk g++ build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy requirements first (for better caching)
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of your backend code
+COPY . .
+
+# Expose Flask default port
+EXPOSE 5000
+
+# Run the Flask app
+CMD ["python", "app.py"]
